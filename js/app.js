@@ -8,10 +8,14 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = -100 ; 
-    this.y = rondumNum(300 , 50); // as the boundry of canvas is from 0 to 606 so enemy will be between them and away from water side and boy start side
-    this.h = 50; 
+    // as the boundry of canvas is from 0 to 606 
+    //so enemy will be between them and away from water side and Grass Side
+    this.y = rondumNum(200 , 50);
+    // this height and width for check collision fn. 
+    this.h = 50;    
     this.w = 50;
-    this.speed = rondumNum(300 , 50); // speed of enemy 
+    // speed of enemy 
+    this.speed = rondumNum(300 , 50); 
 };
 
 // Update the enemy's position, required method for game
@@ -31,30 +35,40 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 var Player = function () {
     // determine the player paramter
-    this.sprite = 'images/char-boy.png'; // determine the player design 
-    this.x = 200 ;  // first x coordinator 
-    this.y = 400 ; // first Y coordinator
-    this.h = 50 ; // player's height
-    this.w = 50 ; // player's width 
+    // determine the player design 
+    this.sprite = 'images/char-boy.png'; 
+    // first x coordinator 
+    this.x = 200 ;  
+    // first Y coordinator
+    this.y = 400 ;
+    // player's height 
+    this.h = 50 ; 
+    // player's width 
+    this.w = 50 ; 
 }
 // This class requires an update(), render() and
-// the update fn 
+// the update fn for update player's Pos 
 Player.prototype.update = function (){
     this.xn = this.x;
     this.yn = this.y; 
 }
-// the render fn 
+// the render fn  for drawing the player
 Player.prototype.render = function (){
     ctx.drawImage(Resources.get(this.sprite) , this.x , this.y )
 }
-// a handleInput() method.
+// a handleInput() method. to move the player right or left or up or down 
 Player.prototype.handleInput = function(key){
+    //check the key if it is left and the player far from the left boundry for canvas then decrease its x pos
     if ( key === 'left' && this.x > 20) {
-        this.x = this.x - 50 ; // move will be 50 
+        // move will be 50 
+        this.x = this.x - 50 ;
+    // check for up boundry  
     }else if ( key === 'up' && this.y > 50 ) {
         this.y = this.y - 50 ;
+    // check for right boundry
     }else if (key === 'right' && this.x < 400) {
         this.x = this.x + 50; 
+    // check for down boundry
     }else if ( key === 'down' && this.y < 400){
         this.y = this.y + 50; 
     }
@@ -72,7 +86,14 @@ Enemy.prototype.group = function(num) {
 // Place the player object in a variable called player
 var player = new Player() ;
 var enemy = new Enemy();
-enemy.group(2);
+// this for generate for first load
+enemy.group(3)
+// this fun for generate 3 enemies  
+function myenemy() {
+    enemy.group(3)
+}
+// this timer for generate enemy every 3 secounds 
+var tim = setInterval(myenemy, 3000);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -86,13 +107,19 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-function collision(r,t) {
+
+// check collision fun. 
+function checkCollisions() {
+    //collision fun check if two item collision or not 
+    // by check pos x for one item and pos x for secound include its width
+    // and for second item check its x pos and Pos x for another and its width
+    // same as Y Pos and height 
+    function collision(r,t) {
     if (r.x < t.x+ t.w && r.x + r.w > t.x && r.y < t.y+t.h && r.y + r.h > t.h){
         return true ;
     }
 }
-
-function checkCollisions() {
+// this for loop to check player colliosion for any enemy
     for (var i = allEnemies.length - 1; i >= 0; i--) {
         if (collision(player , allEnemies[i])){
             player.x = 200 ; 
@@ -100,16 +127,19 @@ function checkCollisions() {
             lives= lives -1; 
         }
     }
+    // this for reset player for reach water side 
     if (player.y === 50 ) {
         player.x = 200 ; 
         player.y = 400;
-        enemy.group(2);
+        // enemy.group(2);
     }
+    // game over 
     if (lives === 0){
         alert('GameOver Please Play Again')
         location.reload();
     }
 }
+// random fun for generate one number between two numbers
 function rondumNum (x,y) {
     return Math.floor(Math.random() * x) + y;
 }
