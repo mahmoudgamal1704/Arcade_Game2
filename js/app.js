@@ -107,36 +107,57 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
+// class for text at top of game 
+var Stat = function() {
+    this.fontColor = 'white';
+    this.curlevel = 1;
+    this.curlives = 3;
+    this.curScore = 0;
+}
+// fun. for write our status at the game to the player know his lives and his level
+Stat.prototype.render = function() {
+    ctx.font= "20px Georgia";
+    ctx.textAlign = 'start';
+    ctx.fillText('Level : ' + this.curlevel + '     your Score ==> ' + this.curScore + '       Lives : ' + this.curlives , 25 , 82);
+}
+var stat = new Stat();
 // check collision fun. 
 function checkCollisions() {
     //collision fun check if two item collision or not 
     // by check pos x for one item and pos x for secound include its width
     // and for second item check its x pos and Pos x for another and its width
     // same as Y Pos and height 
-    function collision(r,t) {
-    if (r.x < t.x+ t.w && r.x + r.w > t.x && r.y < t.y+t.h && r.y + r.h > t.h){
-        return true ;
+    function collision(r,t) {  
+        return r.x < t.x+ t.w && r.x + r.w > t.x && r.y < t.y+t.h && r.y + r.h > t.y ;
     }
-}
 // this for loop to check player colliosion for any enemy
     for (var i = allEnemies.length - 1; i >= 0; i--) {
         if (collision(player , allEnemies[i])){
             player.x = 200 ; 
             player.y = 400;
-            lives= lives -1; 
+            stat.curlives= stat.curlives -1; 
         }
     }
     // this for reset player for reach water side 
     if (player.y === 50 ) {
         player.x = 200 ; 
         player.y = 400;
-        // enemy.group(2);
+        stat.curlevel = stat.curlevel+1;
+        stat.curScore = stat.curScore + 200;
+        if (stat.curlevel === 10){
+            alert ('Congratulations!!! You Win and reach to level 10 & You have ' + stat.curScore + ' Points With '+ stat.curlives + ' Lives')
+            location.reload();
+            // reset level and score to playe again
+            stat.curlevel= 1 ;
+            stat.curScore = 0 ;
+        }
     }
     // game over 
-    if (lives === 0){
+    if (stat.curlives === 0){
         alert('GameOver Please Play Again')
         location.reload();
+        // reset lives to play again
+        stat.curlives = 3;
     }
 }
 // random fun for generate one number between two numbers
